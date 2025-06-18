@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  app:
+    build: ./app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - app

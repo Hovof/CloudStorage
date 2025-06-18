@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Мои файлы{% endblock %}
+
+{% block content %}
+<h1>Мои файлы</h1>
+
+<!-- Форма загрузки файлов -->
+<div class="card mb-4">
+    <div class="card-header">
+        Загрузить файл
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
+            <div class="mb-3">
+                <label for="file" class="form-label">Выберите файл</label>
+                <input class="form-control" type="file" id="file" name="file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Загрузить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Проверка на наличие файлов -->
+{% if files %}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Имя файла</th>
+                <th>Доступ</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td>{{ file['filename'] }}</td>
+                <td>{{ 'Публичный' if file['is_public'] else 'Приватный' }}</td>
+                <td>
+                    <a href="{{ url_for('toggle_file_access', file_id=file['id']) }}" class="btn btn-sm btn-secondary">
+                        {{ 'Сделать приватным' if file['is_public'] else 'Сделать публичным' }}
+                    </a>
+                    <a href="{{ url_for('download_user_file', file_id=file['id']) }}" class="btn btn-sm btn-primary">
+                        Скачать
+                    </a>
+                    {% if file['is_public'] %}
+                    <a href="{{ url_for('generate_download_link', file_id=file['id']) }}" class="btn btn-sm btn-success">
+                        Получить ссылку для скачивания
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>У вас нет загруженных файлов.</p>
+{% endif %}
+
+<!-- Отображение сообщений -->
+<!-- {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %} -->
+{% endblock %}
